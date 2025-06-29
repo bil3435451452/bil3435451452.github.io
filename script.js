@@ -267,3 +267,44 @@ document.addEventListener('DOMContentLoaded', function() {
     initSlider();
     startAutoSlide();
 });
+
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Сохраняем оригинальный текст кнопки
+    const originalBtnText = submitBtn.textContent;
+    
+    // Меняем текст кнопки на "Отправка..."
+    submitBtn.textContent = 'Отправка...';
+    submitBtn.disabled = true;
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Очищаем форму при успешной отправке
+            form.reset();
+            // Показываем сообщение об успехе
+            alert(data.message);
+        } else {
+            // Показываем сообщение об ошибке
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при отправке формы. Пожалуйста, попробуйте позже.');
+    })
+    .finally(() => {
+        // Восстанавливаем оригинальный текст кнопки
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+    });
+});
